@@ -1,7 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
+require('dotenv').config()
 
-mongoose.connect('mongodb+srv://Atlas13:Around974@cluster0.q9qpa3n.mongodb.net/?retryWrites=true&w=majority',
+const userRoutes = require('./routes/auth');
+
+mongoose.connect(`${process.env.MONGO_URI}`,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
@@ -16,5 +19,7 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   next();
 });
+
+app.use('/api/auth', userRoutes);
 
 module.exports = app;
