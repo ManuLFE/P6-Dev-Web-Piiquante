@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const multer = require("multer");
 const path = require("path");
 require('dotenv').config()
+const app = express();
+app.use(express.json());
 
 const userRoutes = require('./routes/auth');
 const saucesRoutes = require("./routes/sauces");
@@ -12,9 +14,6 @@ mongoose.connect(`${process.env.MONGO_URI}`,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
-
-const app = express();
-app.use(express.json());
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -26,7 +25,5 @@ app.use((req, res, next) => {
 app.use("/api/auth", userRoutes);
 app.use("/images", express.static(path.join(__dirname, "images")));
 app.use("/api/sauces", saucesRoutes);
-
-module.exports = app;
 
 module.exports = app;
