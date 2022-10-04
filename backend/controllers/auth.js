@@ -3,9 +3,6 @@ const jwt = require('jsonwebtoken');
 const Auth = require('../models/auth');
 
 exports.signup = (req, res, next) => {
-
-  // pass validator
-
   bcrypt.hash(req.body.password, 10)
     .then(hash => {
       const user = new Auth({
