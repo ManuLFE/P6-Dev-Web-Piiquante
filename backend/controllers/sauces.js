@@ -19,24 +19,27 @@ exports.modifySauce = (req, res, next) => {
       imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : { ...req.body };
 
-  if (req.file) {
-    Sauce.findOne({ _id: req.params.id })
-      .then(sauce => {
-        const filename = sauce.imageUrl.split('/images/')[1];
-        fs.unlink(`images/${filename}`, () => {
+  Sauce.findOne({ _id: req.params.id})
+    .then( sauce => {
+      if(req.auth.userId !== sauce.userId) {
+        if (req.file) {
+              const filename = sauce.imageUrl.split('/images/')[1];
+              fs.unlink(`images/${filename}`, () => {
+                Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
+                  .then(() => res.status(200).json({ message: 'Objet modifié !'}))
+                  .catch(error => res.status(400).json({ error }));
+              });
+        }else{
+          //si pas de nouvelle image mettre a jour la nouvelle sauce
           Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
             .then(() => res.status(200).json({ message: 'Objet modifié !'}))
             .catch(error => res.status(400).json({ error }));
-        });
-      })
-      .catch(error => res.status(500).json({ error }));
-
-  }else{
-    //si pas de nouvelle image mettre a jour la nouvelle sauce
-    Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
-      .then(() => res.status(200).json({ message: 'Objet modifié !'}))
-      .catch(error => res.status(400).json({ error }));
-  }
+        }
+      }  else {
+        throw 'Parameter is not a number!';
+      }
+    })
+    .catch(error => res.status(400).json({ error }));
 
 };
 
